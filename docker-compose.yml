@@ -9,7 +9,7 @@ services:
       - products-db
     environment:
       - DATABASE_USERNAME=user
-      - DATABASE_PASSWORD=P@$$w0rd
+      - DATABASE_PASSWORD=Passw0rd
       - DATABASE_HOST=products-db
       - DATABASE_PORT=3306
       - DATABASE_NAME=products
