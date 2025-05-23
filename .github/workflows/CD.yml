@@ -40,16 +40,16 @@ jobs:
       
       - name: Build image docker
         run: |
-          sudo docker build -t products-api .
-          sudo docker tag products-api products-api:latest
+          docker build -t products-api .
+          docker tag products-api products-api:latest
       
       - name: Docker compose
         run: |
-          sudo docker compose up -d
+          docker compose up -d
       
       - name: check docker
         run: |
-          sudo docker ps
+          docker ps
       
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
