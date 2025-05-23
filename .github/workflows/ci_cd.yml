@@ -1,0 +1,51 @@
+name: CI-CD Pre-release
+
+on:
+  push:
+    tags:
+      - '*b'
+      - 'RC-*'
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: ci-cd on self hosted runner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configurer Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Linter
+        run: |
+          source venv/bin/activate
+          pylint --ignore=venv . | tee rapport_pylint.txt
+      
+      - name: Run test
+        run: |
+          source venv/bin/activate
+          pytest ./test.py
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            Nouvelle release générée automatiquement pour le tag **${{ github.ref_name }}**.
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
