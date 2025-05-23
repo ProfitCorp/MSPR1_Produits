@@ -23,6 +23,7 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: products
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_USER: user
       MYSQL_PASSWORD: P@$$w0rd
     volumes:
