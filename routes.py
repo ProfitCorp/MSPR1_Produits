@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from controllers import get_all_items, create_item, update_item, delete_item
 from database import get_db
 from schemas import Products, ProductsGet
+from auth.jwt_handler import create_access_token
 
 router = APIRouter()
 
@@ -97,3 +98,12 @@ def get_coffee():
     Just an EasterEgg :)
     """
     raise HTTPException(status_code = 418, detail = "I'm a teapot")
+
+
+data = {"user": "user_id_123", "password": "jaaj"}
+@router.get("/auth/")
+def get_jwt_token():
+    """
+    Route to get an JWT Token
+    """
+    return create_access_token(data)
