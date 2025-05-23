@@ -8,8 +8,7 @@ services:
     depends_on:
       - products-db
     environment:
-      - DATABASE_USERNAME=user
-      - DATABASE_PASSWORD=Passw0rd
+      - DATABASE_USERNAME=root
       - DATABASE_HOST=products-db
       - DATABASE_PORT=3306
       - DATABASE_NAME=products
@@ -26,7 +25,7 @@ services:
       MYSQL_DATABASE: products
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_USER: user
-      MYSQL_PASSWORD: P@$$w0rd
+      MYSQL_PASSWORD: Passw0rd
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
