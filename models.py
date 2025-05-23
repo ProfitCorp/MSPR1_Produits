@@ -31,9 +31,9 @@ class ItemDB(Base): # pylint: disable=too-few-public-methods
         id (int): The primary key, uniquely identifying each product entry.
     """
     __tablename__ = "Products"
-    name = Column(String, index=True)
+    name = Column(String(255), index=True)
     price = Column(Float)
-    description = Column(String)
-    color = Column(String)
+    description = Column(String(255))
+    color = Column(String(255))
     stock = Column(Integer)
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
