@@ -5,7 +5,7 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      products-db:
+      - products-db
     environment:
       - DATABASE_USERNAME=user
       - DATABASE_PASSWORD=P@$$w0rd
