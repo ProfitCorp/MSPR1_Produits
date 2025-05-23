@@ -31,7 +31,7 @@ def update_item(db: Session, item_id: int, item_data: Products):
     db_item.stock = item_data.stock
     db.commit()
     db.refresh(db_item)
-    return db_item
+    return itemdb_to_products(db_item)
 
 # Fonction pour supprimer un item
 def delete_item(db: Session, item_id: int):
