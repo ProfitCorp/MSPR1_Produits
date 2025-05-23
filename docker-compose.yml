@@ -2,6 +2,7 @@ services:
   products-api:
     image: products-api:latest
     container_name: products-api
+    restart: on-failure
     ports:
       - "5000:5000"
     depends_on:
