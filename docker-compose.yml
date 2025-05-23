@@ -6,7 +6,6 @@ services:
       - "5000:5000"
     depends_on:
       products-db:
-        condition: service_healthy
     environment:
       - DATABASE_USERNAME=user
       - DATABASE_PASSWORD=P@$$w0rd
@@ -28,11 +27,6 @@ services:
       MYSQL_PASSWORD: P@$$w0rd
     volumes:
       - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - products
 
