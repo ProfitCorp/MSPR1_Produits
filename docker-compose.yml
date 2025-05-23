@@ -1,0 +1,43 @@
+services:
+  products-api:
+    image: products-api:latest
+    container_name: products-api
+    restart: on-failure
+    ports:
+      - "5000:5000"
+    depends_on:
+      - products-db
+    environment:
+      - DATABASE_USERNAME=root
+      - DATABASE_HOST=products-db
+      - DATABASE_PORT=3306
+      - DATABASE_NAME=products
+      - APP_ENV=prod
+    networks:
+      - products
+      - nginx-proxy
+
+  products-db:
+    image: mysql:8.0
+    container_name: products-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: products
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_USER: user
+      MYSQL_PASSWORD: Passw0rd
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - products
+
+volumes:
+  mysql_data:
+
+networks:
+  products:
+    name: products-network
+    driver: bridge
+  nginx-proxy:
+    external: true
+    name: nginx-proxy-network
