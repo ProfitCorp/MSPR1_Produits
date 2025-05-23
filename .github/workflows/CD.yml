@@ -1,0 +1,63 @@
+name: CI Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: CD For production
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configurer Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Installer les dépendances
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Linter
+        run: |
+          source venv/bin/activate
+          pylint --ignore=venv . | tee rapport_pylint.txt
+      
+      - name: Run test
+        run: |
+          source venv/bin/activate
+          pytest ./test.py
+      
+      - name: Build image docker
+        run: |
+          sudo docker build -t products-api .
+          sudo docker tag products-api products-api:latest
+      
+      - name: Docker compose
+        run: |
+          sudo docker compose up -d
+      
+      - name: check docker
+        run: |
+          sudo docker ps
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            Nouvelle release générée automatiquement pour le tag **${{ github.ref_name }}**.
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

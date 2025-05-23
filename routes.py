@@ -1,31 +1,99 @@
-from fastapi import APIRouter, Depends
+"""
+API route definitions for item management.
+
+This module defines the FastAPI router responsible for handling HTTP requests
+related to item CRUD operations and a fun endpoint for testing HTTP status codes.
+
+Endpoints include:
+- Retrieving all items
+- Adding a new item
+- Updating an existing item
+- Deleting an item
+- Returning an HTTP 418 teapot status for fun
+
+Dependencies:
+- SQLAlchemy session dependency injected via FastAPI's Depends
+- Controller functions to handle database logic
+"""
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from controllers import get_all_items, create_item, update_item, delete_item
 from database import get_db
-from models import ItemDB
-from schemas import *
+from schemas import Products, ProductsGet
 
 router = APIRouter()
 
 @router.get("/items/", response_model=list[ProductsGet])
 def get_items(db: Session = Depends(get_db)):
+    """
+    Retrieve all items from the database.
+
+    Args:
+        db (Session): SQLAlchemy session object.
+
+    Returns:
+        List[ProductsGet]: List of product objects with details and IDs.
+    """
     return get_all_items(db)
 
 @router.post("/items/", response_model=ProductsGet)
 def add_item(item: Products, db: Session = Depends(get_db)):
-    # new_item = create_item(db, item)
+    """
+    Create a new item in the database.
+
+    Args:
+        item (Products): Product data to insert.
+        db (Session): SQLAlchemy session object.
+
+    Returns:
+        ProductsGet: The created product with its assigned ID.
+    """
     return create_item(db, item)
 
-@router.put("/items/{item_id}")
+@router.put("/items/{item_id}", response_model=ProductsGet)
 def modify_item(item_id: int, item: Products, db: Session = Depends(get_db)):
+    """
+    Update an existing item in the database by its ID.
+
+    Args:
+        item_id (int): ID of the item to update.
+        item (Products): Updated product data.
+        db (Session): SQLAlchemy session object.
+
+    Raises:
+        HTTPException: If the item with the specified ID is not found.
+
+    Returns:
+        ProductsGet: The updated product with its details.
+    """
     updated_item = update_item(db, item_id, item)
     if not updated_item:
-        return {"error": "Item non trouvé"}
-    return {"message": f"Item {item_id} mis à jour", "item": updated_item}
+        raise HTTPException(status_code=404, detail="Item not found")
+    return updated_item
 
 @router.delete("/items/{item_id}")
 def remove_item(item_id: int, db: Session = Depends(get_db)):
+    """
+    Delete an item from the database by its ID.
+
+    Args:
+        item_id (int): ID of the item to delete.
+        db (Session): SQLAlchemy session object.
+
+    Raises:
+        HTTPException: If the item with the specified ID is not found.
+
+    Returns:
+        int: HTTP status 200 if deletion was successful.
+    """
     deleted_item = delete_item(db, item_id)
     if not deleted_item:
-        return {"error": "Item non trouvé"}
-    return {"message": f"Item {item_id} supprimé"}
+        raise HTTPException(status_code=404, detail="Item not found")
+    return 200
+
+@router.get("/coffee/")
+def get_coffee():
+    """
+    Just an EasterEgg :)
+    """
+    raise HTTPException(status_code = 418, detail = "I'm a teapot")
