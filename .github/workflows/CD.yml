@@ -1,18 +1,17 @@
-name: CI-CD Pre-release
+name: CI Release
 
 on:
   push:
     tags:
-      - '*b'
-      - 'RC-*'
+      - 'v*'
 
 permissions:
   contents: write
 
 jobs:
   test:
-    name: ci-cd on self hosted runner
-    runs-on: ubuntu-latest
+    name: CD For production
+    runs-on: self-hosted
 
     steps:
       - name: Checkout du code
@@ -21,7 +20,7 @@ jobs:
       - name: Configurer Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Installer les dépendances
         run: |
@@ -39,6 +38,19 @@ jobs:
           source venv/bin/activate
           pytest ./test.py
       
+      - name: Build image docker
+        run: |
+          sudo docker build -t products-api .
+          sudo docker tag products-api products-api:latest
+      
+      - name: Docker compose
+        run: |
+          sudo docker compose up -d
+      
+      - name: check docker
+        run: |
+          sudo docker ps
+      
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -46,6 +58,6 @@ jobs:
           name: Release ${{ github.ref_name }}
           body: |
             Nouvelle release générée automatiquement pour le tag **${{ github.ref_name }}**.
-          prerelease: true
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

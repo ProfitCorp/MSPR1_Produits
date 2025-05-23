@@ -1,0 +1,48 @@
+services:
+  products-api:
+    image: products-api
+    container_name: products-api
+    ports:
+      - "5000:5000"
+    depends_on:
+      products-db:
+        condition: service_healthy
+    environment:
+      - DATABASE_USERNAME=user
+      - DATABASE_PASSWORD=P@$$w0rd
+      - DATABASE_HOST=products-db
+      - DATABASE_PORT=3306
+      - DATABASE_NAME=products
+    networks:
+      - products
+      - nginx-proxy
+
+  products-db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: products
+      MYSQL_USER: user
+      MYSQL_PASSWORD: P@$$w0rd
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - products
+
+volumes:
+  mysql_data:
+
+networks:
+  products:
+    name: products-network
+  nginx-proxy:
+    external: true
+    name: nginx-proxy-network
