@@ -1,7 +1,7 @@
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
-import os
+from auth.auth import SECRET_KEY, ALGORITHM
 
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
