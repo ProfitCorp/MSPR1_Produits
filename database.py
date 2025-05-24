@@ -8,10 +8,11 @@ and creates a local session factory (SessionLocal) for managing transactions.
 It also defines the declarative base class (Base) for ORM model creation.
 """
 import os
-from main import APP_ENV
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
+APP_ENV = os.getenv("APP_ENV", "dev")
 
 if APP_ENV == "prod":
     DATABASE_USERNAME = os.getenv("DATABASE_USERNAME")
