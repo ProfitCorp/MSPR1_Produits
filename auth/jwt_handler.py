@@ -14,9 +14,14 @@ This module generate an JWT for API Authentication
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
+from main import APP_ENV
 import os
 
-SECRET_KEY = "Etape3Profit"
+if APP_ENV == "prod":
+    SECRET_KEY = os.getenv("SECRET_KEY")
+else:
+    SECRET_KEY = "ExampleSecretKey"
+
 ALGORITHM = "HS256"
 
 class JWTBearer(HTTPBearer):
