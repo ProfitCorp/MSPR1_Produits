@@ -1,17 +1,30 @@
 name: CI Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 
 permissions:
   contents: write
 
 jobs:
   test:
+    env:
+      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+      DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      APP_ENV: ${{ secrets.APP_ENV }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      MYSQL_ALLOW_EMPTY_PASSWORD: ${{ secrets.MYSQL_ALLOW_EMPTY_PASSWORD }}
+    if: github.event.pull_request.merged == true
     name: CD For production
     runs-on: self-hosted
+
+    
 
     steps:
       - name: Checkout du code
@@ -43,9 +56,16 @@ jobs:
           docker build -t products-api .
           docker tag products-api products-api:latest
       
-      - name: Docker compose
+      - name: Run docker-compose with env vars
         run: |
-          docker compose up -d
+          echo "DATABASE_USERNAME=$DATABASE_USERNAME" >> .env
+          echo "DATABASE_HOST=$DATABASE_HOST" >> .env
+          echo "DATABASE_PORT=$DATABASE_PORT" >> .env
+          echo "DATABASE_NAME=$DATABASE_NAME" >> .env
+          echo "APP_ENV=$APP_ENV" >> .env
+          echo "SECRET_KEY=$SECRET_KEY" >> .env
+          echo "MYSQL_ALLOW_EMPTY_PASSWORD=$MYSQL_ALLOW_EMPTY_PASSWORD" >> .env
+          docker-compose up -d
       
       - name: check docker
         run: |
