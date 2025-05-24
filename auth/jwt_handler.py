@@ -14,8 +14,9 @@ This module generate an JWT for API Authentication
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
-from main import APP_ENV
 import os
+
+APP_ENV = os.getenv("APP_ENV", "dev")
 
 if APP_ENV == "prod":
     SECRET_KEY = os.getenv("SECRET_KEY")

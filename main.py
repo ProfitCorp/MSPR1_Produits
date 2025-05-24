@@ -16,8 +16,6 @@ import os
 
 Base.metadata.create_all(bind=engine)
 
-APP_ENV = os.getenv("APP_ENV", "dev")
-
 app = FastAPI()
 
 app.include_router(routes.router)
