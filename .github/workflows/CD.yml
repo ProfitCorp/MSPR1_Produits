@@ -66,6 +66,8 @@ jobs:
           echo "DATABASE_NAME=$DATABASE_NAME" >> .env
           echo "APP_ENV=$APP_ENV" >> .env
           echo "SECRET_KEY=$SECRET_KEY" >> .env
+          echo "DEFAULT_USERNAME=$DEFAULT_USERNAME" >> .env
+          echo "DEFAULT_PASSWORD=$DEFAULT_PASSWORD" >> .env
           echo "MYSQL_ALLOW_EMPTY_PASSWORD=$MYSQL_ALLOW_EMPTY_PASSWORD" >> .env
           docker-compose up -d
       
