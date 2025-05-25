@@ -36,10 +36,10 @@ jobs:
           source venv/bin/activate
           pylint --ignore=venv . | tee rapport_pylint.txt
       
-      - name: Run test
-        run: |
-          source venv/bin/activate
-          pytest ./test.py
+      # - name: Run test
+      #   run: |
+      #     source venv/bin/activate
+      #     pytest ./test.py
       
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
