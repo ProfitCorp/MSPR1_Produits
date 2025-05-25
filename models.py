@@ -37,3 +37,23 @@ class ItemDB(Base): # pylint: disable=too-few-public-methods
     color = Column(String(255))
     stock = Column(Integer)
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+
+class User(Base): # pylint: disable=too-few-public-methods
+    """
+    SQLAlchemy ORM model for the 'Products' table.
+
+    This class defines the schema for a product stored in the database.
+    It includes details such as name, price, description, color, stock, and a unique identifier.
+
+    Attributes:
+        name (str): The name of the product.
+        price (float): The price of the product.
+        description (str): A brief description of the product.
+        color (str): The color of the product.
+        stock (int): The available stock quantity.
+        id (int): The primary key, uniquely identifying each product entry.
+    """
+    __tablename__ = "Users"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    username = Column(String(255))
+    password = Column(String(255))

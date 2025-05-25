@@ -13,6 +13,8 @@ services:
       - DATABASE_HOST
       - DATABASE_PORT
       - DATABASE_NAME
+      - DEFAULT_USERNAME
+      - DEFAULT_PASSWORD
       - APP_ENV
       - SECRET_KEY
     networks:

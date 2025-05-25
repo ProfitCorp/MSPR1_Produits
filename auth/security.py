@@ -1,29 +1,7 @@
-"""
-This module generate an JWT for API Authentication
-"""
-
-# def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=30)):
-#     """
-#     Generates a JWT token with an optional expiration time.
-#     """
-#     to_encode = data.copy()
-#     expire = datetime.utcnow() + expires_delta
-#     to_encode.update({"exp": expire})
-#     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-#     return encoded_jwt
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
-import os
-
-APP_ENV = os.getenv("APP_ENV", "dev")
-
-if APP_ENV == "prod":
-    SECRET_KEY = os.getenv("SECRET_KEY")
-else:
-    SECRET_KEY = "ExampleSecretKey"
-
-ALGORITHM = "HS256"
+from auth.auth import SECRET_KEY, ALGORITHM
 
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
