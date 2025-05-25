@@ -19,11 +19,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from controllers import get_all_items, create_item, update_item, delete_item
 from database import get_db
-from schemas import Products, ProductsGet
+from schemas import Products, ProductsGet, LoginInput
+from auth.auth import create_access_token, authenticate_user
+from auth.security import JWTBearer
 
 router = APIRouter()
 
-@router.get("/items/", response_model=list[ProductsGet])
+@router.get("/items/", dependencies=[Depends(JWTBearer())], response_model=list[ProductsGet])
 def get_items(db: Session = Depends(get_db)):
     """
     Retrieve all items from the database.
@@ -97,3 +99,12 @@ def get_coffee():
     Just an EasterEgg :)
     """
     raise HTTPException(status_code = 418, detail = "I'm a teapot")
+
+
+@router.post("/token")
+def login_user(user: LoginInput):
+    if not authenticate_user(user.username, user.password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    token = create_access_token({"sub": user.username})
+    return {"access_token": token, "token_type": "bearer"}

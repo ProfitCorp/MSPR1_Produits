@@ -8,22 +8,30 @@ and creates a local session factory (SessionLocal) for managing transactions.
 It also defines the declarative base class (Base) for ORM model creation.
 """
 import os
+import logging
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 APP_ENV = os.getenv("APP_ENV", "dev")
 
+logger = logging.getLogger("uvicorn")
+
 if APP_ENV == "prod":
     DATABASE_USERNAME = os.getenv("DATABASE_USERNAME")
     DATABASE_HOST = os.getenv("DATABASE_HOST")
     DATABASE_PORT = os.getenv("DATABASE_PORT")
     DATABASE_NAME = os.getenv("DATABASE_NAME")
-    DATABASE_URL = f"mysql+pymysql://{DATABASE_USERNAME}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+    DATABASE_URL = f"mysql+pymysql://{DATABASE_USERNAME}@{DATABASE_HOST}:{DATABASE_PORT}"
+    DEFAULT_USERNAME = os.getenv("DEFAULT_USERNAME")
+    DEFAULT_PASSWORD = os.getenv("DEFAULT_PASSWORD")
     connect_args = {}
-else:
+elif APP_ENV == "dev":
+    logger.critical("Application currently running in dev environnement. DON'T USE in production environnement")
     DATABASE_URL = "sqlite:///./items.db"
     connect_args = {"check_same_thread": False}
+    DEFAULT_USERNAME = "TestUser"
+    DEFAULT_PASSWORD = "TestPassword"
 
 engine = create_engine(DATABASE_URL, connect_args=connect_args)
 

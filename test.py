@@ -44,7 +44,7 @@ def test_get_items_empty():
     Function that test if GET method return empty object
     """
     response = client.get("/items/")
-    assert response.status_code == 200
+    assert response.status_code == 403
     assert response.json() == []
 
 def test_create_item():

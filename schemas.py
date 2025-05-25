@@ -48,3 +48,7 @@ class ProductsGet(BaseModel):
     details: Details
     stock: int
     id: int
+
+class LoginInput(BaseModel):
+    username: str
+    password: str
