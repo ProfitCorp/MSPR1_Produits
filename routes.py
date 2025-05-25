@@ -103,8 +103,10 @@ def get_coffee():
 
 @router.post("/token")
 def login_user(user: LoginInput):
+    
     if not authenticate_user(user.username, user.password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail=user.password)
 
     token = create_access_token({"sub": user.username})
     return {"access_token": token, "token_type": "bearer"}
+    return logger.debug(user)

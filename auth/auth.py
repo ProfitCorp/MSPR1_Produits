@@ -5,9 +5,12 @@ from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
+from database import SessionLocal
+from models import User
 import os
 
 APP_ENV = os.getenv("APP_ENV", "dev")
+db = SessionLocal()
 
 if APP_ENV == "prod":
     SECRET_KEY = os.getenv("SECRET_KEY")
@@ -31,9 +34,9 @@ def create_access_token(data: dict):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def authenticate_user(username: str, password: str):
-    user = fake_users_db.get(username)
+    user = db.query(User).where(User.username == username).first()
     if not user:
         return False
-    if user["password"] != password:
+    if user.password != password:
         return False
     return True
