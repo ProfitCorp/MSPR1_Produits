@@ -10,15 +10,17 @@ by creating all defined models, and includes the API routes from the `routes` mo
 - `init_admin_user` initialize admin user if doesn't exist
 """
 from fastapi import FastAPI
-from database import Base, engine
-from init import init_admin_user
-import routes
+from app.database import Base, engine
+from app.init import init_admin_user
+import app.routes as routes
 import os
 
 Base.metadata.create_all(bind=engine)
 
 init_admin_user()
 
-app = FastAPI()
+app = FastAPI(
+    docs_url=None
+)
 
 app.include_router(routes.router)

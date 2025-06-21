@@ -17,9 +17,9 @@ Dependencies:
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from controllers import get_all_items, create_item, update_item, delete_item
-from database import get_db
-from schemas import Products, ProductsGet, LoginInput
+from app.controllers import get_all_items, create_item, update_item, delete_item
+from app.database import get_db
+from app.schemas import Products, ProductsGet, LoginInput
 from auth.auth import create_access_token, authenticate_user
 from auth.security import JWTBearer
 
@@ -38,7 +38,7 @@ def get_items(db: Session = Depends(get_db)):
     """
     return get_all_items(db)
 
-@router.post("/items/", response_model=ProductsGet)
+@router.post("/items/", dependencies=[Depends(JWTBearer())], response_model=ProductsGet)
 def add_item(item: Products, db: Session = Depends(get_db)):
     """
     Create a new item in the database.
@@ -52,7 +52,7 @@ def add_item(item: Products, db: Session = Depends(get_db)):
     """
     return create_item(db, item)
 
-@router.put("/items/{item_id}", response_model=ProductsGet)
+@router.put("/items/{item_id}", dependencies=[Depends(JWTBearer())], response_model=ProductsGet)
 def modify_item(item_id: int, item: Products, db: Session = Depends(get_db)):
     """
     Update an existing item in the database by its ID.
@@ -73,7 +73,7 @@ def modify_item(item_id: int, item: Products, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Item not found")
     return updated_item
 
-@router.delete("/items/{item_id}")
+@router.delete("/items/{item_id}", dependencies=[Depends(JWTBearer())])
 def remove_item(item_id: int, db: Session = Depends(get_db)):
     """
     Delete an item from the database by its ID.
@@ -103,10 +103,12 @@ def get_coffee():
 
 @router.post("/token")
 def login_user(user: LoginInput):
-    
-    if not authenticate_user(user.username, user.password):
-        raise HTTPException(status_code=401, detail=user.password)
+    user = authenticate_user(user.username, user.password)
+    if not user:
+        raise HTTPException(status_code=401)
 
-    token = create_access_token({"sub": user.username})
+    token = create_access_token({
+        "user": user.username,
+        "role": user.role
+        })
     return {"access_token": token, "token_type": "bearer"}
-    return logger.debug(user)
