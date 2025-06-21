@@ -1,4 +1,4 @@
-name: CI Release
+name: CI/CD
 
 on:
   pull_request:
@@ -69,19 +69,8 @@ jobs:
           echo "DEFAULT_USERNAME=$DEFAULT_USERNAME" >> .env
           echo "DEFAULT_PASSWORD=$DEFAULT_PASSWORD" >> .env
           echo "MYSQL_ALLOW_EMPTY_PASSWORD=$MYSQL_ALLOW_EMPTY_PASSWORD" >> .env
-          docker-compose up -d
+          docker compose up -d
       
       - name: check docker
         run: |
           docker ps
-      
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          body: |
-            Nouvelle release générée automatiquement pour le tag **${{ github.ref_name }}**.
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

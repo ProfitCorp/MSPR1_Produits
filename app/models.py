@@ -13,7 +13,7 @@ Fields:
 - `id`: Primary key, auto-incremented, uniquely identifies each product.
 """
 from sqlalchemy import Column, Integer, String, Float
-from database import Base
+from app.database import Base
 
 class ItemDB(Base): # pylint: disable=too-few-public-methods
     """
@@ -55,5 +55,14 @@ class User(Base): # pylint: disable=too-few-public-methods
     """
     __tablename__ = "Users"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    username = Column(String(255))
-    password = Column(String(255))
+    username = Column(String(255), nullable=False)
+    password = Column(String(255), nullable=False)
+    role = Column(String(20), nullable=False, default="user")
+    firstname = Column(String(255), nullable=False, default="John")
+    lastname = Column(String(255), nullable=False, default="Doe")
+    street_number = Column(String(5), nullable=False, default="123")
+    street = Column(String(255), nullable=False, default="SomeStreet")
+    postalcode = Column(String(5), nullable=False, default="12345")
+    city = Column(String(255), nullable=False, default="SomeCity")
+    company_name = Column(String(255), nullable=False, default="SomeCompany")
+
