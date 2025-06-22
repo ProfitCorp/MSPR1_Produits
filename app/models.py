@@ -15,7 +15,7 @@ Fields:
 from sqlalchemy import Column, Integer, String, Float
 from app.database import Base
 
-class ItemDB(Base): # pylint: disable=too-few-public-methods
+class ProductDB(Base): # pylint: disable=too-few-public-methods
     """
     SQLAlchemy ORM model for the 'Products' table.
 
@@ -31,14 +31,15 @@ class ItemDB(Base): # pylint: disable=too-few-public-methods
         id (int): The primary key, uniquely identifying each product entry.
     """
     __tablename__ = "Products"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(255), index=True)
     price = Column(Float)
     description = Column(String(255))
     color = Column(String(255))
     stock = Column(Integer)
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    
 
-class User(Base): # pylint: disable=too-few-public-methods
+class CustomerDB(Base): # pylint: disable=too-few-public-methods
     """
     SQLAlchemy ORM model for the 'Products' table.
 
@@ -53,7 +54,7 @@ class User(Base): # pylint: disable=too-few-public-methods
         stock (int): The available stock quantity.
         id (int): The primary key, uniquely identifying each product entry.
     """
-    __tablename__ = "Users"
+    __tablename__ = "Customers"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String(255), nullable=False)
     password = Column(String(255), nullable=False)
