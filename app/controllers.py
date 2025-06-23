@@ -13,8 +13,8 @@ Functions:
 - itemdb_to_products: Helper function to convert ORM item objects to Pydantic models.
 """
 from sqlalchemy.orm import Session
-from app.models import ItemDB
-from app.schemas import Details, Products, ProductsGet
+from models import ItemDB
+from schemas import Details, Products, ProductsGet
 
 def get_all_items(db: Session):
     """

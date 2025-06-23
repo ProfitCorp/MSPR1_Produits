@@ -1,60 +1,20 @@
-"""
-Database model definition for products.
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table, Float
+from sqlalchemy.orm import relationship
+from database import Base
+from datetime import datetime, timezone
 
-This module defines the `ItemDB` class, which represents the structure of the `Products` table
-in the database using SQLAlchemy's ORM.
+# Table d'association entre commandes et produits (Asso_2)
+order_product_association = Table(
+    "asso_2",
+    Base.metadata,
+    Column("id_commandes", Integer, ForeignKey("Orders.id"), primary_key=True),
+    Column("id_produit", Integer, ForeignKey("Products.id"), primary_key=True)
+)
 
-Fields:
-- `name`: The name of the product.
-- `price`: The price of the product.
-- `description`: A short description of the product.
-- `color`: The color of the product.
-- `stock`: Quantity in stock.
-- `id`: Primary key, auto-incremented, uniquely identifies each product.
-"""
-from sqlalchemy import Column, Integer, String, Float
-from app.database import Base
 
-class ProductDB(Base): # pylint: disable=too-few-public-methods
-    """
-    SQLAlchemy ORM model for the 'Products' table.
+class CustomerDB(Base):
+    __tablename__ = "Customers"  # Nom d'origine
 
-    This class defines the schema for a product stored in the database.
-    It includes details such as name, price, description, color, stock, and a unique identifier.
-
-    Attributes:
-        name (str): The name of the product.
-        price (float): The price of the product.
-        description (str): A brief description of the product.
-        color (str): The color of the product.
-        stock (int): The available stock quantity.
-        id (int): The primary key, uniquely identifying each product entry.
-    """
-    __tablename__ = "Products"
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String(255), index=True)
-    price = Column(Float)
-    description = Column(String(255))
-    color = Column(String(255))
-    stock = Column(Integer)
-    
-
-class CustomerDB(Base): # pylint: disable=too-few-public-methods
-    """
-    SQLAlchemy ORM model for the 'Products' table.
-
-    This class defines the schema for a product stored in the database.
-    It includes details such as name, price, description, color, stock, and a unique identifier.
-
-    Attributes:
-        name (str): The name of the product.
-        price (float): The price of the product.
-        description (str): A brief description of the product.
-        color (str): The color of the product.
-        stock (int): The available stock quantity.
-        id (int): The primary key, uniquely identifying each product entry.
-    """
-    __tablename__ = "Customers"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String(255), nullable=False)
     password = Column(String(255), nullable=False)
@@ -67,3 +27,41 @@ class CustomerDB(Base): # pylint: disable=too-few-public-methods
     city = Column(String(255), nullable=False, default="SomeCity")
     company_name = Column(String(255), nullable=False, default="SomeCompany")
 
+    orders = relationship(
+        "OrderDB",
+        back_populates="customer",
+        cascade="all, delete-orphan"
+    )
+
+
+class OrderDB(Base):
+    __tablename__ = "Orders"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    # created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    customer_id = Column(Integer, ForeignKey("Customers.id"))  
+
+    customer = relationship("CustomerDB", back_populates="orders")  
+    products = relationship(
+        "ProductDB",
+        secondary=order_product_association,
+        back_populates="orders"
+    )
+
+
+class ProductDB(Base):
+    __tablename__ = "Products"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String)
+    # created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    price = Column(Float)
+    description = Column(String)
+    color = Column(String)
+    stock = Column(Integer)
+
+    orders = relationship(
+        "OrderDB",
+        secondary=order_product_association,
+        back_populates="products"
+    )

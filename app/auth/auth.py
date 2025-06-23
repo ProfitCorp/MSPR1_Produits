@@ -5,8 +5,8 @@ from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
-from app.database import SessionLocal
-from app.models import User
+from database import SessionLocal
+from models import User
 import os
 
 APP_ENV = os.getenv("APP_ENV", "dev")

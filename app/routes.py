@@ -17,9 +17,9 @@ Dependencies:
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.controllers import get_all_items, create_item, update_item, delete_item
-from app.database import get_db
-from app.schemas import Products, ProductsGet, LoginInput
+from controllers import get_all_items, create_item, update_item, delete_item
+from database import get_db
+from schemas import Products, ProductsGet, LoginInput
 from auth.auth import create_access_token, authenticate_user
 from auth.security import JWTBearer
 
