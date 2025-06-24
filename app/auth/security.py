@@ -3,6 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from auth.auth import SECRET_KEY, ALGORITHM
 import logging
+import bcrypt
 
 logger = logging.getLogger("uvicorn")
 
@@ -28,3 +29,8 @@ class JWTBearer(HTTPBearer):
             return payload
         except JWTError:
             return None
+
+def hash_password(password: str) -> str:
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')

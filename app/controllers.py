@@ -13,8 +13,9 @@ Functions:
 - itemdb_to_products: Helper function to convert ORM item objects to Pydantic models.
 """
 from sqlalchemy.orm import Session
-from models import ItemDB
+from models import ProductDB
 from schemas import Details, Products, ProductsGet
+from mq.publish import publish_product_delete, publish_product_update, publish_product_create
 
 def get_all_items(db: Session):
     """
@@ -26,7 +27,7 @@ def get_all_items(db: Session):
     Returns:
         List[ProductsGet]: List of all items converted to ProductsGet schema.
     """
-    test = db.query(ItemDB).all()
+    test = db.query(ProductDB).all()
     return [itemdb_to_products(test) for test in test]
 
 def create_item(db: Session, item_data: Products):
@@ -40,7 +41,7 @@ def create_item(db: Session, item_data: Products):
     Returns:
         ProductsGet: The created item converted to ProductsGet schema.
     """
-    db_item = ItemDB(
+    db_item = ProductDB(
         name=item_data.name,
         price=item_data.details.price,
         description=item_data.details.description,
@@ -50,6 +51,7 @@ def create_item(db: Session, item_data: Products):
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
+    publish_product_create(item_data.dict())
     return itemdb_to_products(db_item)
 
 def update_item(db: Session, item_id: int, item_data: Products):
@@ -64,7 +66,7 @@ def update_item(db: Session, item_id: int, item_data: Products):
     Returns:
         ProductsGet | None: Updated item converted to ProductsGet schema, or None if not found.
     """
-    db_item = db.query(ItemDB).filter(ItemDB.id == item_id).first()
+    db_item = db.query(ProductDB).filter(ProductDB.id == item_id).first()
     if not db_item:
         return None
     db_item.name = item_data.name
@@ -74,6 +76,7 @@ def update_item(db: Session, item_id: int, item_data: Products):
     db_item.stock = item_data.stock
     db.commit()
     db.refresh(db_item)
+    publish_product_update(item_id, item_data.dict())
     return itemdb_to_products(db_item)
 
 def delete_item(db: Session, item_id: int):
@@ -87,14 +90,15 @@ def delete_item(db: Session, item_id: int):
     Returns:
         ItemDB | None: Deleted item instance or None if not found.
     """
-    db_item = db.query(ItemDB).filter(ItemDB.id == item_id).first()
+    db_item = db.query(ProductDB).filter(ProductDB.id == item_id).first()
     if not db_item:
         return None
     db.delete(db_item)
     db.commit()
+    publish_product_delete(item_id)
     return db_item
 
-def itemdb_to_products(item: ItemDB) -> ProductsGet:
+def itemdb_to_products(item: ProductDB) -> ProductsGet:
     """
     Convert an ItemDB ORM object to a ProductsGet Pydantic model.
 
