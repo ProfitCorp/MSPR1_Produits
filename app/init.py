@@ -1,5 +1,6 @@
-from app.database import SessionLocal, DEFAULT_USERNAME, DEFAULT_PASSWORD
-from app.models import User
+from database import SessionLocal, DEFAULT_USERNAME, DEFAULT_PASSWORD
+from models import CustomerDB
+from auth.security import hash_password
 
 if (DEFAULT_USERNAME == None or DEFAULT_PASSWORD == None):
     raise EnvironmentError("DEFAULT_USERNAME or DEFAULT_PASSWORD not variable defined")
@@ -7,11 +8,11 @@ if (DEFAULT_USERNAME == None or DEFAULT_PASSWORD == None):
 def init_admin_user():
     db = SessionLocal()
     try:
-        user_count = db.query(User).count()
+        user_count = db.query(CustomerDB).count()
         if user_count == 0:
-            admin = User(
+            admin = CustomerDB(
                 username=DEFAULT_USERNAME,
-                password=DEFAULT_PASSWORD,
+                password=hash_password(DEFAULT_PASSWORD),
                 role="admin"
             )
             db.add(admin)
