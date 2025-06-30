@@ -1,4 +1,4 @@
-name: CI Release
+name: CI/CD
 
 on:
   pull_request:
@@ -21,7 +21,8 @@ jobs:
       DEFAULT_PASSWORD: ${{ secrets.DEFAULT_PASSWORD }}
       APP_ENV: ${{ secrets.APP_ENV }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      MYSQL_ALLOW_EMPTY_PASSWORD: ${{ secrets.MYSQL_ALLOW_EMPTY_PASSWORD }}
+      MQ_HOST: ${{ secrets.MQ_HOST }}
+      LOG_LEVEL: ${{ secrets.lOG_LEVEL }}
     if: github.event.pull_request.merged == true
     name: CD For production
     runs-on: self-hosted
@@ -41,12 +42,12 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          pip install -r requirements.txt
+          pip install -r ./app/requirements.txt
 
       - name: Linter
         run: |
           source venv/bin/activate
-          pylint --ignore=venv . | tee rapport_pylint.txt
+          pylint --ignore=venv ./app | tee rapport_pylint.txt
       
       # - name: Run test
       #   run: |
@@ -64,11 +65,12 @@ jobs:
           echo "DATABASE_HOST=$DATABASE_HOST" >> .env
           echo "DATABASE_PORT=$DATABASE_PORT" >> .env
           echo "DATABASE_NAME=$DATABASE_NAME" >> .env
-          echo "APP_ENV=$APP_ENV" >> .env
-          echo "SECRET_KEY=$SECRET_KEY" >> .env
           echo "DEFAULT_USERNAME=$DEFAULT_USERNAME" >> .env
           echo "DEFAULT_PASSWORD=$DEFAULT_PASSWORD" >> .env
-          echo "MYSQL_ALLOW_EMPTY_PASSWORD=$MYSQL_ALLOW_EMPTY_PASSWORD" >> .env
+          echo "APP_ENV=$APP_ENV" >> .env
+          echo "SECRET_KEY=$SECRET_KEY" >> .env
+          echo "MQ_HOST=$MQ_HOST" >> .env
+          echo "LOG_LEVEL=$LOG_LEVEL" >> .env
           docker compose up -d
       
       - name: check docker
