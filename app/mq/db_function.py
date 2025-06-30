@@ -1,6 +1,9 @@
 from models import CustomerDB, OrderDB, ProductDB
 from sqlalchemy.orm import joinedload
 from auth.security import hash_password
+from logs.logger import setup_logger
+
+logger = setup_logger()
 
 def create_user(db, data):
     new_user = CustomerDB(
@@ -17,12 +20,12 @@ def create_user(db, data):
     )
     db.add(new_user)
     db.commit()
-    print(f"[✓] Utilisateur {new_user.id} créé.")
+    logger.debug(f"[✓] Utilisateur {new_user.id} créé.")
 
 def update_user(db, user_id, data):
     user = db.query(CustomerDB).filter(CustomerDB.id == user_id).first()
     if not user:
-        print(f"[!] Utilisateur {user_id} non trouvé pour mise à jour.")
+        logger.debug(f"[!] Utilisateur {user_id} non trouvé pour mise à jour.")
         return
 
     if "username" in data:
@@ -49,17 +52,17 @@ def update_user(db, user_id, data):
         user.company_name = data["companyName"]
 
     db.commit()
-    print(f"[✓] Utilisateur {user_id} mis à jour.")
+    logger.debug(f"[✓] Utilisateur {user_id} mis à jour.")
 
 def delete_user(db, user_id):
     user = db.query(CustomerDB).filter(CustomerDB.id == user_id).first()
     if not user:
-        print(f"[!] Utilisateur {user_id} non trouvé pour suppression.")
+        logger.debug(f"[!] Utilisateur {user_id} non trouvé pour suppression.")
         return
 
     db.delete(user)
     db.commit()
-    print(f"[✓] Utilisateur {user_id} supprimé.")
+    logger.debug(f"[✓] Utilisateur {user_id} supprimé.")
 
 def create_order(db, order_id, data):
     new_order = OrderDB(id=order_id, customer_id=data["customer_id"])
@@ -70,12 +73,12 @@ def create_order(db, order_id, data):
         new_order.products = products
 
     db.commit()
-    print(f"[✓] Commande {order_id} créée.")
+    logger.debug(f"[✓] Commande {order_id} créée.")
 
 def update_order(db, order_id, data):
     order = db.query(OrderDB).options(joinedload(OrderDB.products)).filter(OrderDB.id == order_id).first()
     if not order:
-        print(f"[!] Commande {order_id} non trouvée pour mise à jour.")
+        logger.debug(f"[!] Commande {order_id} non trouvée pour mise à jour.")
         return
 
     if "customer_id" in data:
@@ -86,14 +89,14 @@ def update_order(db, order_id, data):
         order.products = products
 
     db.commit()
-    print(f"[✓] Commande {order_id} mise à jour.")
+    logger.debug(f"[✓] Commande {order_id} mise à jour.")
 
 def delete_order(db, order_id):
     order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
     if not order:
-        print(f"[!] Commande {order_id} non trouvée pour suppression.")
+        logger.debug(f"[!] Commande {order_id} non trouvée pour suppression.")
         return
 
     db.delete(order)
     db.commit()
-    print(f"[✓] Commande {order_id} supprimée.")
+    logger.debug(f"[✓] Commande {order_id} supprimée.")
