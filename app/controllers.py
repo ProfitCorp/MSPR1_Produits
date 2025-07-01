@@ -49,9 +49,9 @@ def create_item(db: Session, item_data: Products):
         stock=item_data.stock
     )
     db.add(db_item)
+    publish_product_create(item_data.dict())
     db.commit()
     db.refresh(db_item)
-    publish_product_create(item_data.dict())
     return itemdb_to_products(db_item)
 
 def update_item(db: Session, item_id: int, item_data: Products):
@@ -74,9 +74,10 @@ def update_item(db: Session, item_id: int, item_data: Products):
     db_item.description = item_data.details.description
     db_item.color = item_data.details.color
     db_item.stock = item_data.stock
+    publish_product_update(item_id, item_data.dict())
     db.commit()
     db.refresh(db_item)
-    publish_product_update(item_id, item_data.dict())
+    
     return itemdb_to_products(db_item)
 
 def delete_item(db: Session, item_id: int):
@@ -94,8 +95,8 @@ def delete_item(db: Session, item_id: int):
     if not db_item:
         return None
     db.delete(db_item)
-    db.commit()
     publish_product_delete(item_id)
+    db.commit()
     return db_item
 
 def itemdb_to_products(item: ProductDB) -> ProductsGet:
