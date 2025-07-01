@@ -8,7 +8,7 @@ from mq.db_function import create_order, update_order, delete_order, create_user
 logger = setup_logger()
 
 def receive_user_message():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.getenv("MQ_HOST")))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.getenv("MQ_HOST", "localhost")))
     channel = connection.channel()
 
     channel.exchange_declare(exchange="users.sync", exchange_type="fanout")
@@ -59,7 +59,7 @@ def receive_user_message():
         connection.close()
 
 def receive_order_message():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.getenv("MQ_HOST")))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.getenv("MQ_HOST", "localhost")))
     channel = connection.channel()
 
     channel.exchange_declare(exchange="orders.sync", exchange_type="fanout")

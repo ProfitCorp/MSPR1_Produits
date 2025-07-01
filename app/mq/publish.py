@@ -6,7 +6,7 @@ from logs.logger import setup_logger
 logger = setup_logger()
 
 def publish_product_create(data: dict):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("MQ_HOST")))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("MQ_HOST", "localhost")))
     channel = connection.channel()
 
     channel.exchange_declare(exchange='products.sync', exchange_type='fanout')
@@ -21,7 +21,7 @@ def publish_product_create(data: dict):
     connection.close()
 
 def publish_product_update(product_id: int, data: dict):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("MQ_HOST")))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("MQ_HOST", "localhost")))
     channel = connection.channel()
 
     channel.exchange_declare(exchange='products.sync', exchange_type='fanout')
@@ -38,7 +38,7 @@ def publish_product_update(product_id: int, data: dict):
 
 
 def publish_product_delete(product_id: int):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("MQ_HOST")))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv("MQ_HOST", "localhost")))
     channel = connection.channel()
 
     channel.exchange_declare(exchange='products.sync', exchange_type='fanout')
