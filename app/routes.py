@@ -25,7 +25,7 @@ from auth.security import JWTBearer
 
 router = APIRouter()
 
-@router.get("/items/", dependencies=[Depends(JWTBearer())], response_model=list[ProductsGet])
+@router.get("/items/", response_model=list[ProductsGet])
 def get_items(db: Session = Depends(get_db)):
     """
     Retrieve all items from the database.
