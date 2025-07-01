@@ -14,6 +14,7 @@ from database import Base, engine
 from init import init_admin_user
 import routes as routes
 from threading import Thread
+from logs.logger import setup_logger
 from mq.receive import receive_user_message, receive_order_message
 
 Base.metadata.create_all(bind=engine)
@@ -24,8 +25,11 @@ app = FastAPI()
 
 app.include_router(routes.router)
 
+logger = setup_logger()
+
 @app.on_event("startup")
 def _start_listener():
     """Launch the RabbitMQ listener in a background thread."""
     Thread(target=receive_user_message, daemon=True).start()
     Thread(target=receive_order_message, daemon=True).start()
+    logger.info("Application start")
